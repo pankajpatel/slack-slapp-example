@@ -11,7 +11,7 @@ const app = express()
 const slapp = Slapp({
     context: BeepBoopContext(),
     convo_store: BeepBoopConvoStore(),
-    log: (parseInt(process.env.SLAPP_LOGGING, 10) === 1),
+    log: true,
 })
 
 useHelpActions(slapp)
