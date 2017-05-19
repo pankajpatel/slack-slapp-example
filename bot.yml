@@ -1,7 +1,6 @@
 name: Slack Slapp Example
 description: An example implementation for a Slack app using Slapp
 config:
-  global: true
 - name: AWS_ACCESS_KEY_ID
   friendly_name: AWS Access Key
   info: Amazon Web Services access key
