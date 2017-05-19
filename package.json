@@ -1,7 +1,7 @@
 {
   "name": "slack-slapp-example",
   "version": "0.1.0",
-  "description": "An example for build a slack app with slapp",
+  "description": "An example Slack app built with slapp",
   "main": "index.js",
   "scripts": {
     "start": "babel-node index.js",
