@@ -7,13 +7,6 @@ import loki from 'lokijs'
 import useHelpActions from './bot/help-actions'
 import useEventActions from './bot/event-actions'
 
-const db = new loki('event.db', {
-  autosave: true,
-  autosaveInterval: 100, // 10 seconds
-})
-
-const events = db.addCollection('events')
-
 const app = express()
 
 const slapp = Slapp({
@@ -21,12 +14,26 @@ const slapp = Slapp({
   log: true,
 })
 
-useHelpActions(slapp)
-useEventActions(slapp, events)
-
 // attach handlers to an Express app
 slapp.attachToExpress(app)
 
 app.listen(process.env.PORT)
 
 console.log('Slack App is running on port ', process.env.PORT)
+
+const db = new loki('event.db', {
+  persistenceAdapter: 'fs',
+  autoload: true,
+  autoloadCallback: onDatabaseLoaded,
+  autosave: true,
+  autosaveInterval: 100, // 10 seconds
+})
+
+function onDatabaseLoaded() {
+  let events = db.getCollection('events')
+  if (!events) {
+    events = db.addCollection('events')
+  }
+  useHelpActions(slapp)
+  useEventActions(slapp, events)
+}
