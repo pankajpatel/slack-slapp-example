@@ -1,8 +1,7 @@
-import catchAsync from '../lib/async'
 import uuid from 'uuid'
 
 const useEventActions = (slapp, events) => {
-  slapp.command('/event', catchAsync((message, value) => {
+  slapp.command('/event', (message, value) => {
     const id = uuid.v4()
     message.say({
       text: `<@${message.meta.user_id}> created a new event:\n *${value}*`,
@@ -25,16 +24,16 @@ const useEventActions = (slapp, events) => {
       created_by: message.meta.user_id,
       channel_id: message.meta.channel_id
     })
-  }))
+  })
 
-  slapp.action('event', 'join', catchAsync((message, value) => {
+  slapp.action('event', 'join', (message, value) => {
     const event = events.findOne({id: value})
     message.say(`<@${message.meta.user_id}> joins *${event.title}*`)
     event.attendees.push(message.meta.user_id)
     events.update(event)
-  }))
+  })
 
-  slapp.command('/event-list', catchAsync((message) => {
+  slapp.command('/event-list', (message) => {
     const eventList = events.find({
       channel_id: message.meta.channel_id
     })
@@ -63,7 +62,7 @@ const useEventActions = (slapp, events) => {
       }))
     })
 
-  }))
+  })
 }
 
 export { useEventActions as default }
