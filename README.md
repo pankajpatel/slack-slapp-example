@@ -13,4 +13,7 @@ npm start
 
 # run bot in dev mode
 npm run dev
+
+# run tests
+npm test
 ```
