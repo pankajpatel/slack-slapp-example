@@ -16,13 +16,6 @@ describe('EventActions', () => {
       channel_id: 'C789',
       title: 'The event title',
       attendees: []
-    },
-    event2: {
-      id: '2',
-      created_by: 'U123',
-      channel_id: 'C123',
-      title: 'Other event title',
-      attendees: []
     }
   }
 
@@ -35,7 +28,6 @@ describe('EventActions', () => {
       insert: stub(),
       update: stub(),
       findOne: stub(),
-      find: stub()
     }
     eventActions = new EventActions(events)
   })
@@ -92,26 +84,6 @@ describe('EventActions', () => {
       eventActions.onJoin(message, fixtures.event.title)
 
       expect(message.respond).to.be.calledOnce
-    })
-
-  })
-
-  describe('onList', () => {
-
-    it('should respond with a list of events', () => {
-      events.find.returns([].concat([fixtures.event, fixtures.event2]))
-      eventActions.onList(message, fixtures.event.title)
-
-      expect(message.respond).to.be.calledOnce
-
-      const sentAttachments = message.respond.firstCall.args[0].attachments
-      expect(sentAttachments.length).to.equal(2)
-
-      expect(sentAttachments[0].title).to.equal(fixtures.event.title)
-      expect(sentAttachments[0].actions[0].value).to.equal(fixtures.event.id)
-
-      expect(sentAttachments[1].title).to.equal(fixtures.event2.title)
-      expect(sentAttachments[1].actions[0].value).to.equal(fixtures.event2.id)
     })
 
   })

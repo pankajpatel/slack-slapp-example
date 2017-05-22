@@ -53,36 +53,6 @@ class EventActions {
       this.events.update(joinedEvent)
     }
   }
-
-  onList(message) {
-    const eventList = this.events.find({
-      channel_id: message.meta.channel_id
-    })
-
-    message.respond({
-      text: 'Here is a list of all events planned in this channel:',
-      attachments: eventList.map(event => ({
-        attachment_type: 'default',
-        callback_id: 'event',
-        title: event.title,
-        fields: [{
-          title: 'Organizer',
-          value: `<@${event.created_by}>`,
-          short: true,
-        }, {
-          title: 'Attendees',
-          value: event.attendees.map(userId => `<@${userId}>`).join(','),
-          short: true,
-        }],
-        actions: [{
-          type: 'button',
-          name: 'join',
-          text: 'Join',
-          value: event.id,
-        }]
-      }))
-    })
-  }
 }
 
 const useEventActions = (slapp, events) => {
@@ -90,7 +60,6 @@ const useEventActions = (slapp, events) => {
   const eventActions = new EventActions(events)
 
   slapp.command('/event', eventActions.onCreate.bind(eventActions))
-  slapp.command('/event-list', eventActions.onList.bind(eventActions))
   slapp.action('event', 'join', eventActions.onJoin.bind(eventActions))
 }
 
