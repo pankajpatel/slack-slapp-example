@@ -12,17 +12,6 @@ class EventActions {
 
     message.say({
       text: `<@${message.meta.user_id}> created a new event:\n *${value}*`,
-      attachments: [{
-        attachment_type: 'default',
-        callback_id: 'event',
-        text: `Do you want to join this event?`,
-        actions: [{
-          type: 'button',
-          name: 'join',
-          text: 'Join',
-          value: id,
-        }]
-      }]
     })
 
     this.events.insert({

@@ -44,9 +44,6 @@ describe('EventActions', () => {
 
       expect(message.say).to.be.calledOnce
 
-      const sentAttachments = message.say.firstCall.args[0].attachments
-      expect(sentAttachments[0].actions[0].value).to.be.defined
-
       expect(events.insert).to.be.calledOnce
 
       const createdEvent = events.insert.firstCall.args[0]
