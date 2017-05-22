@@ -19,7 +19,7 @@ const useEventActions = (slapp) => {
   }))
 
   slapp.action('event', 'join', catchAsync((message, value) => {
-    message.say(`<@${message.meta.user_id}> joins ${value}`)
+    message.say(`<@${message.meta.user_id}> joins *${value}*`)
   }))
 }
 
