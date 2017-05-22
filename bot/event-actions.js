@@ -1,6 +1,7 @@
 import uuid from 'uuid'
 
 const useEventActions = (slapp, events) => {
+
   slapp.command('/event', (message, value) => {
     const id = uuid.v4()
     message.say({
