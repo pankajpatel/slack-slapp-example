@@ -1,7 +1,9 @@
 import catchAsync from '../lib/async'
+import uuid from 'uuid'
 
-const useEventActions = (slapp) => {
+const useEventActions = (slapp, events) => {
   slapp.command('/event', catchAsync((message, value) => {
+    const id = uuid.v4()
     message.say({
       text: `<@${message.meta.user_id}> created a new event:\n *${value}*`,
       attachments: [{
@@ -12,14 +14,55 @@ const useEventActions = (slapp) => {
           type: 'button',
           name: 'join',
           text: 'Join',
-          value
+          value: id,
         }]
       }]
+    })
+    events.insert({
+      id,
+      title: value,
+      attendees: [],
+      created_by: message.meta.user_id,
+      channel_id: message.meta.channel_id
     })
   }))
 
   slapp.action('event', 'join', catchAsync((message, value) => {
-    message.say(`<@${message.meta.user_id}> joins *${value}*`)
+    const event = events.findOne({id: value})
+    message.say(`<@${message.meta.user_id}> joins *${event.title}*`)
+    event.attendees.push(message.meta.user_id)
+    events.update(event)
+  }))
+
+  slapp.command('/event-list', catchAsync((message) => {
+    const eventList = events.find({
+      channel_id: message.meta.channel_id
+    })
+
+    message.respond({
+      text: 'Here is a list of all events planned in this channel:',
+      attachments: eventList.map(event => ({
+        attachment_type: 'default',
+        callback_id: 'event',
+        title: event.title,
+        fields: [{
+          title: 'Organizer',
+          value: `<@${event.created_by}>`,
+          short: true,
+        }, {
+          title: 'Attendees',
+          value: event.attendees.map(userId => `<@${userId}>`).join(','),
+          short: true,
+        }],
+        actions: [{
+          type: 'button',
+          name: 'join',
+          text: 'Join',
+          value: event.id,
+        }]
+      }))
+    })
+
   }))
 }
 
