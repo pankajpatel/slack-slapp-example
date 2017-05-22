@@ -30,13 +30,18 @@ const useEventActions = (slapp, events) => {
   slapp.action('event', 'join', (message, value) => {
     const joinedUserId = message.meta.user_id
     const event = events.findOne({id: value})
-    if (event.attendees.find(joinedUserId)) {
-      message.respond('You\'ve already joined this event')
+    if (event.attendees.indexOf(joinedUserId !== -1)) {
+      message.respond({
+        replace_original: false,
+        text: 'You\'ve already joined this event'
+      })
     } else {
-      message.say(`<@${joinedUserId}> joins *${event.title}*`)
+      message.say({
+        text: `<@${joinedUserId}> joins *${event.title}*`
+      })
+      event.attendees.push(joinedUserId)
+      events.update(event)
     }
-    event.attendees.push(joinedUserId)
-    events.update(event)
   })
 
   slapp.command('/event-list', (message) => {
