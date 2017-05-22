@@ -25,7 +25,7 @@ describe('EventActions', () => {
 
   beforeEach('prepare eventActions', () => {
     events = {
-      insert: stub()
+      insert: stub(),
     }
     eventActions = new EventActions(events)
   })
