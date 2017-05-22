@@ -1,9 +1,15 @@
 import uuid from 'uuid'
 
-const useEventActions = (slapp, events) => {
+class EventActions {
 
-  slapp.command('/event', (message, value) => {
+  constructor(events) {
+    this.events = events
+  }
+
+  onCreate(message, value) {
+
     const id = uuid.v4()
+
     message.say({
       text: `<@${message.meta.user_id}> created a new event:\n *${value}*`,
       attachments: [{
@@ -18,34 +24,38 @@ const useEventActions = (slapp, events) => {
         }]
       }]
     })
-    events.insert({
+
+    this.events.insert({
       id,
       title: value,
       attendees: [],
       created_by: message.meta.user_id,
       channel_id: message.meta.channel_id
     })
-  })
+  }
 
-  slapp.action('event', 'join', (message, value) => {
-    const joinedUserId = message.meta.user_id
-    const event = events.findOne({id: value})
-    if (event.attendees.indexOf(joinedUserId !== -1)) {
+  onJoin(message, value) {
+
+    const joiningUserId = message.meta.user_id
+    const joinedEvent = this.events.findOne({id: value})
+
+    if (joinedEvent.attendees.indexOf(joiningUserId) !== -1) {
       message.respond({
         replace_original: false,
         text: 'You\'ve already joined this event'
       })
     } else {
       message.say({
-        text: `<@${joinedUserId}> joins *${event.title}*`
+        text: `<@${joiningUserId}> joins *${joinedEvent.title}*`
       })
-      event.attendees.push(joinedUserId)
-      events.update(event)
-    }
-  })
 
-  slapp.command('/event-list', (message) => {
-    const eventList = events.find({
+      joinedEvent.attendees.push(joiningUserId)
+      this.events.update(joinedEvent)
+    }
+  }
+
+  onList(message) {
+    const eventList = this.events.find({
       channel_id: message.meta.channel_id
     })
 
@@ -72,8 +82,16 @@ const useEventActions = (slapp, events) => {
         }]
       }))
     })
-
-  })
+  }
 }
 
-export { useEventActions as default }
+const useEventActions = (slapp, events) => {
+
+  const eventActions = new EventActions(events)
+
+  slapp.command('/event', eventActions.onCreate.bind(eventActions))
+  slapp.command('/event-list', eventActions.onList.bind(eventActions))
+  slapp.action('event', 'join', eventActions.onJoin.bind(eventActions))
+}
+
+export {useEventActions as default, EventActions}
