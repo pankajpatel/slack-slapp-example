@@ -33,26 +33,6 @@ class EventActions {
       channel_id: message.meta.channel_id
     })
   }
-
-  onJoin(message, value) {
-
-    const joiningUserId = message.meta.user_id
-    const joinedEvent = this.events.findOne({id: value})
-
-    if (joinedEvent.attendees.indexOf(joiningUserId) !== -1) {
-      message.respond({
-        replace_original: false,
-        text: 'You\'ve already joined this event'
-      })
-    } else {
-      message.say({
-        text: `<@${joiningUserId}> joins *${joinedEvent.title}*`
-      })
-
-      joinedEvent.attendees.push(joiningUserId)
-      this.events.update(joinedEvent)
-    }
-  }
 }
 
 const useEventActions = (slapp, events) => {
@@ -60,7 +40,6 @@ const useEventActions = (slapp, events) => {
   const eventActions = new EventActions(events)
 
   slapp.command('/event', eventActions.onCreate.bind(eventActions))
-  slapp.action('event', 'join', eventActions.onJoin.bind(eventActions))
 }
 
 export {useEventActions as default, EventActions}
